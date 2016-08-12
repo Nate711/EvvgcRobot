@@ -35,6 +35,8 @@ void Periph_clock_enable(void)
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1,  ENABLE);
 }
 
+
+// Automatically shuts off PWM if main loop isnt running as expected
 void WatchDog(void)
 {
     if (WatchDogCounter++ > 1000)
@@ -215,9 +217,9 @@ int main(void)
     {
         idleLoops++;
         unsigned int currentTime = micros();
-        unsigned int timePassed = currentTime - lastTime;
+        unsigned int timePassed = currentTime - lastTime; // time since last main loop execution
 
-        if (timePassed >= 2000)
+        if (timePassed >= 2000) // execute this loop every 2000 microseconds (2ms) so 500Hz
         {
             idlePerf = idleLoops * 100.0 * 1000 / timePassed / idleMax; // perf in percent
             idleLoops = 0;

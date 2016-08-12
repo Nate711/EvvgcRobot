@@ -70,6 +70,9 @@ void pitch_PID(void)
     pitch_Error_last = Error_current;
 
     Output[PITCH] = KD + KP;
+
+    // phi = KP+KD
+    // power = pitchPWR
     SetPitchMotor(KP + KD, configData[6]);
 }
 
@@ -258,7 +261,7 @@ void engineProcess(float dt)
 
     unsigned long tCalc = StopWatchLap(&sw);
 
-    pitch_PID();
+    pitch_PID(); // 500Hz
     roll_PID();
     yaw_PID();
 
@@ -268,7 +271,7 @@ void engineProcess(float dt)
     printcounter++;
 
     //if (printcounter >= 500 || dt > 0.0021)
-    if (printcounter >= 500)
+    if (printcounter >= 500) // should be executed at about 1Hz
     {
         if (debugPrint)
         {

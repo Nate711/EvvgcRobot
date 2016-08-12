@@ -3,6 +3,7 @@
 	<name>EvvGC</name>
 	<comment></comment>
 	<projects>
+		<project>Firmware-master</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
