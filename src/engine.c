@@ -27,6 +27,7 @@ int debugCnt     = 0;
 int debugRC      = 0;
 int debugOrient  = 0;
 int debugAutoPan = 0;
+int nathanPrint = 0;
 
 float /*pitch, Gyro_Pitch_angle,*/ pitch_setpoint = 0.0f, pitch_Error_last = 0.0f,  pitch_angle_correction;
 float /*roll,  Gyro_Roll_angle,*/  roll_setpoint  = 0.0f,  roll_Error_last = 0.0f,   roll_angle_correction;
@@ -61,11 +62,13 @@ void roll_PID(void)
 
 //    Output[ROLL] = KD + KP;
 //    SetRollMotor(KP + KD, configData[7]);
-    float f = M_TWOPI*rollcounter/100.0;
+    float f = 10; //M_TWOPI*rollcounter/100.0;
     Output[ROLL] = f;
     SetRollMotor(f,configData[7]);
 
-    print("%8.4f\n",f);
+    if(nathanPrint) {
+    	print("%8.4f\n",f);
+    }
 }
 
 void pitch_PID(void)

@@ -19,6 +19,7 @@ extern int debugCnt;
 extern int debugRC;
 extern int debugOrient;
 extern int debugAutoPan;
+extern int nathanPrint;
 
 void Init_Orientation(void);
 void engineProcess(float dt);

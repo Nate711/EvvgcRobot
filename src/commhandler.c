@@ -31,6 +31,9 @@ void CommHandler(void) //UART4 Interrupt handler implementation
 
         switch (c)
         {
+        	case 'z':
+        		nathanPrint ^= 1;
+        		break;
             case 'a':
                 debugAutoPan ^= 1;
                 print("Autopan messages %s\r\n", debugAutoPan ? "on" : "off");
