@@ -59,7 +59,7 @@ void roll_Nathan(void)
 
 void roll_rotate(void)
 {
-	float f = M_TWOPI*rollcounter/100.0;
+	float f = -M_TWOPI*rollcounter/100.0;
 	Output[ROLL] = f;
 	SetRollMotor(f,configData[7]);
 
@@ -195,14 +195,13 @@ void engineProcess(float dt)
                   usbOverrun());
         }
 
-//        if (debugAutoPan)
-//        {
-//            print("Pitch_output:%3.2f | Roll_output:%3.2f | Yaw_output:%3.2f | centerpoint:%4.4f\n\r",
-//                  Output[PITCH],
-//                  Output[ROLL],
-//                  Output[YAW],
-//                  centerPoint);
-//        }
+       if (debugAutoPan)
+       {
+           print("Pitch_output:%3.2f | Roll_output:%3.2f | Yaw_output:%3.2f \n\r",
+                 Output[PITCH],
+                 Output[ROLL],
+                 Output[YAW]);
+       }
 
         printcounter = 0;
     }
