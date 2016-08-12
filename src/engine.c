@@ -38,6 +38,8 @@ static float rollRCOffset = 0.0f, pitchRCOffset = 0.0f, yawRCOffset = 0.0f;
 
 static int printcounter = 0;
 
+static int rollcounter=0;
+
 float Output[EULAR];
 
 float CameraOrient[EULAR];
@@ -57,8 +59,13 @@ void roll_PID(void)
 
     roll_Error_last = Error_current;
 
-    Output[ROLL] = KD + KP;
-    SetRollMotor(KP + KD, configData[7]);
+//    Output[ROLL] = KD + KP;
+//    SetRollMotor(KP + KD, configData[7]);
+    float f = M_TWOPI*rollcounter/100.0;
+    Output[ROLL] = f;
+    SetRollMotor(f,configData[7]);
+
+    print("%8.4f\n",f);
 }
 
 void pitch_PID(void)
@@ -260,6 +267,8 @@ void engineProcess(float dt)
 #endif
 
     unsigned long tCalc = StopWatchLap(&sw);
+
+    rollcounter++;
 
     pitch_PID(); // 500Hz
     roll_PID();
