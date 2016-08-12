@@ -62,7 +62,7 @@ void roll_PID(void)
 
 //    Output[ROLL] = KD + KP;
 //    SetRollMotor(KP + KD, configData[7]);
-    float f = 10; //M_TWOPI*rollcounter/100.0;
+    float f = M_TWOPI*rollcounter/100.0;
     Output[ROLL] = f;
     SetRollMotor(f,configData[7]);
 
