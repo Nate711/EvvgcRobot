@@ -24,6 +24,7 @@ extern int nathanPrint;
 void Init_Orientation(void);
 void engineProcess(float dt);
 void Get_Orientation(float *AccAngleSmooth, float *Orient, float *AccData, float *GyroData, float dt);
+void Fake_Orientation(float *AccAngleSmooth, float *Orient, float *AccData, float *GyroData, float dt);
 #endif /* ENGINE_H_ */
 
 

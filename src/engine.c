@@ -52,6 +52,34 @@ float GyroData[NUMAXIS] = {0.0f, 0.0f, 0.0f};
 float Step[NUMAXIS]     = {0.0f, 0.0f, 0.0f};
 float RCSmooth[NUMAXIS] = {0.0f, 0.0f, 0.0f};
 
+void roll_Nathan(void)
+{
+	roll_rotate();
+}
+
+void roll_rotate(void)
+{
+	float f = M_TWOPI*rollcounter/100.0;
+	Output[ROLL] = f;
+	SetRollMotor(f,configData[7]);
+
+	if(nathanPrint)
+	{
+	    	print("%8.4f\n",f);
+	}
+}
+
+void pitch_Nathan(void)
+{
+	pitch_fixed();
+}
+
+void pitch_fixed(void) {
+	float f = 0;
+	Output[PITCH] = f;
+	SetPitchMotor(f,configData[6]);
+}
+
 void roll_PID(void)
 {
     float Error_current = roll_setpoint + CameraOrient[ROLL] * 1000.0;
@@ -60,15 +88,8 @@ void roll_PID(void)
 
     roll_Error_last = Error_current;
 
-//    Output[ROLL] = KD + KP;
-//    SetRollMotor(KP + KD, configData[7]);
-    float f = M_TWOPI*rollcounter/100.0;
-    Output[ROLL] = f;
-    SetRollMotor(f,configData[7]);
-
-    if(nathanPrint) {
-    	print("%8.4f\n",f);
-    }
+    Output[ROLL] = KD + KP;
+    SetRollMotor(KP + KD, configData[7]);
 }
 
 void pitch_PID(void)
@@ -83,7 +104,7 @@ void pitch_PID(void)
 
     // phi = KP+KD
     // power = pitchPWR
-    SetPitchMotor(KP + KD, configData[6]);
+    SetPitchMotor(KP+KD, configData[6]);
 }
 
 void yaw_PID(void)
@@ -149,6 +170,13 @@ void Init_Orientation()
     CameraOrient[PITCH] = AccAngleSmooth[PITCH];
     CameraOrient[ROLL]  = AccAngleSmooth[ROLL];
     CameraOrient[YAW]   = 0.0f;
+}
+
+void Fake_Orientation(float *SmoothAcc, float *Orient, float *AccData, float *GyroData, float dt)
+{
+	Orient[PITCH] = 0.0;
+	Orient[ROLL] = 0.0;
+	Orient[YAW] = 0.0;
 }
 
 void Get_Orientation(float *SmoothAcc, float *Orient, float *AccData, float *GyroData, float dt)
@@ -218,51 +246,52 @@ void engineProcess(float dt)
     DEBUG_LEDoff();
 
     StopWatchInit(&sw);
-    MPU6050_ACC_get(AccData); // Getting Accelerometer data
+//    MPU6050_ACC_get(AccData); // Getting Accelerometer data
     unsigned long tAccGet = StopWatchLap(&sw);
 
-    MPU6050_Gyro_get(GyroData); // Getting Gyroscope data
+//    MPU6050_Gyro_get(GyroData); // Getting Gyroscope data
     unsigned long tGyroGet = StopWatchLap(&sw);
 
-    Get_Orientation(AccAngleSmooth, CameraOrient, AccData, GyroData, dt);
+    Fake_Orientation(AccAngleSmooth, CameraOrient, AccData,GyroData,dt);
+//    Get_Orientation(AccAngleSmooth, CameraOrient, AccData, GyroData, dt);
     unsigned long tAccAngle = StopWatchLap(&sw);
 
-    // if we enable RC control
-    if (configData[9] == '1')
-    {
-        // Get the RX values and Averages
-        Get_RC_Step(Step, RCSmooth); // Get RC movement on all three AXIS
-        Step[PITCH] = Limit_Pitch(Step[PITCH], CameraOrient[PITCH]); // limit pitch to defined limits in header
-    }
+//    // if we enable RC control
+//    if (configData[9] == '1')
+//    {
+//        // Get the RX values and Averages
+//        Get_RC_Step(Step, RCSmooth); // Get RC movement on all three AXIS
+//        Step[PITCH] = Limit_Pitch(Step[PITCH], CameraOrient[PITCH]); // limit pitch to defined limits in header
+//    }
 
     // Pitch adjustments
     //pitch_setpoint += Step[PITCH];
-    pitchRCOffset += Step[PITCH] / 1000.0;
+//    pitchRCOffset += Step[PITCH] / 1000.0;
 
-    pitch_angle_correction = constrain((CameraOrient[PITCH] + pitchRCOffset) * R2D, -CORRECTION_STEP, CORRECTION_STEP);
-    pitch_setpoint += pitch_angle_correction; // Pitch return to zero after collision
+//    pitch_angle_correction = constrain((CameraOrient[PITCH] + pitchRCOffset) * R2D, -CORRECTION_STEP, CORRECTION_STEP);
+//    pitch_setpoint += pitch_angle_correction; // Pitch return to zero after collision
 
     // Roll Adjustments
     //roll_setpoint += Step[ROLL];
-    rollRCOffset += Step[ROLL] / 1000.0;
+//    rollRCOffset += Step[ROLL] / 1000.0;
 
     // include the config roll offset which is scaled to 0 = -10.0 degrees, 100 = 0.0 degrees, and 200 = 10.0 degrees
-    roll_angle_correction = constrain((CameraOrient[ROLL] + rollRCOffset + Deg2Rad((configData[11] - 100) / 10.0)) * R2D, -CORRECTION_STEP, CORRECTION_STEP);
-    roll_setpoint += roll_angle_correction; //Roll return to zero after collision
+//    roll_angle_correction = constrain((CameraOrient[ROLL] + rollRCOffset + Deg2Rad((configData[11] - 100) / 10.0)) * R2D, -CORRECTION_STEP, CORRECTION_STEP);
+//    roll_setpoint += roll_angle_correction; //Roll return to zero after collision
 
-    // if we enabled AutoPan on Yaw
-    if (configData[10] == '0')
-    {
-        //ADC1Ch13_yaw = ((ADC1Ch13_yaw * 99.0) + ((float)(readADC1(13) - 2000) / 4000.0)) / 100.0;  // Average ADC value
-        //CameraOrient[YAW] = CameraOrient[YAW] + 0.01 * (ADC1Ch13_yaw - CameraOrient[YAW]);
-        yaw_setpoint = autoPan(Output[YAW], yaw_setpoint);
-    }
-    else
-    {
-        // Yaw Adjustments
-        yaw_setpoint += Step[YAW];
-        yawRCOffset += Step[YAW] / 1000.0;
-    }
+//    // if we enabled AutoPan on Yaw
+//    if (configData[10] == '0')
+//    {
+//        //ADC1Ch13_yaw = ((ADC1Ch13_yaw * 99.0) + ((float)(readADC1(13) - 2000) / 4000.0)) / 100.0;  // Average ADC value
+//        //CameraOrient[YAW] = CameraOrient[YAW] + 0.01 * (ADC1Ch13_yaw - CameraOrient[YAW]);
+//        yaw_setpoint = autoPan(Output[YAW], yaw_setpoint);
+//    }
+//    else
+//    {
+//        // Yaw Adjustments
+//        yaw_setpoint += Step[YAW];
+//        yawRCOffset += Step[YAW] / 1000.0;
+//    }
 
 #if 0
     yaw_angle_correction = constrain((CameraOrient[YAW] + yawRCOffset) * R2D, -CORRECTION_STEP, CORRECTION_STEP);
@@ -273,9 +302,12 @@ void engineProcess(float dt)
 
     rollcounter++;
 
-    pitch_PID(); // 500Hz
-    roll_PID();
-    yaw_PID();
+    pitch_Nathan();
+    roll_Nathan();
+// Responsible for calling Set[Axis]Motor(phi,power) for each motor
+//    pitch_PID(); // 500Hz
+//    roll_PID();
+//    yaw_PID();
 
     unsigned long tPID = StopWatchLap(&sw);
     unsigned long tAll = StopWatchTotal(&sw);

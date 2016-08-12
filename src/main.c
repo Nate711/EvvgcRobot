@@ -115,37 +115,39 @@ void setup(void)
 
     print("init MPU6050...\r\n");
 
-    int imuRetries = 10;
-    while ((imuRetries > 0) && MPU6050_Init())
-    {
-        print("init MPU6050 failed, retries left: %d...\r\n", --imuRetries);
-        Blink();
-    }
-
-    if (!(gotIMU = imuRetries ? 1 : 0))
-    {
-        print("\r\nWARNING: MPU6050 init failed, entering configration mode only...\r\n\r\n");
-    }
-
-    print("loading config...\r\n");
-    configLoad();
-
-    if (gotIMU)
-    {
-        print("pausing for the gimbal to settle...\r\n");
-
-        for (int i = 0; i < SETTLE_PAUSE; i++)
-        {
-            LEDtoggle();
-            Delay_ms(1000);
-        }
-
-        print("calibrating MPU6050 at %ums...\r\n", millis());
-        MPU6050_Gyro_calibration();
-
-        print("Init Orientation\n\r");
-        Init_Orientation();
-    }
+//    UNUSED MPU6050 IMU code
+//
+//    int imuRetries = 10;
+//    while ((imuRetries > 0) && MPU6050_Init())
+//    {
+//        print("init MPU6050 failed, retries left: %d...\r\n", --imuRetries);
+//        Blink();
+//    }
+//
+//    if (!(gotIMU = imuRetries ? 1 : 0))
+//    {
+//        print("\r\nWARNING: MPU6050 init failed, entering configration mode only...\r\n\r\n");
+//    }
+//
+//    print("loading config...\r\n");
+//    configLoad();
+//
+//    if (gotIMU)
+//    {
+//        print("pausing for the gimbal to settle...\r\n");
+//
+//        for (int i = 0; i < SETTLE_PAUSE; i++)
+//        {
+//            LEDtoggle();
+//            Delay_ms(1000);
+//        }
+//
+//        print("calibrating MPU6050 at %ums...\r\n", millis());
+//        MPU6050_Gyro_calibration();
+//
+//        print("Init Orientation\n\r");
+//        Init_Orientation();
+//    }
 
     print("init RC...\r\n");
     RC_Config();
@@ -224,7 +226,9 @@ int main(void)
             idlePerf = idleLoops * 100.0 * 1000 / timePassed / idleMax; // perf in percent
             idleLoops = 0;
 
-            if ((ConfigMode == 0) && gotIMU)
+//			Don't both about the IMU
+//            if ((ConfigMode == 0) && gotIMU)
+            if(ConfigMode == 0)
             {
                 engineProcess(timePassed / 1000000.0);
             }
