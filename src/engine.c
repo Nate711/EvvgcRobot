@@ -69,11 +69,14 @@ void pitch_PID(void)
 
     pitch_Error_last = Error_current;
 
-    Output[PITCH] = KD + KP;
+//    Output[PITCH] = KD + KP;
+//    // phi = KP+KD
+//    // power = pitchPWR
+//    SetPitchMotor(KP + KD, configData[6]);
+    print('%4d    %8.4f\n',printcounter,M_TWOPI*printcounter/500.0);
+    Output[PITCH] = M_TWOPI*printcounter / 500.0;
+    SetPitchMotor(M_TWOPI*printcounter/500.0,configData[6]);
 
-    // phi = KP+KD
-    // power = pitchPWR
-    SetPitchMotor(KP + KD, configData[6]);
 }
 
 void yaw_PID(void)
@@ -85,6 +88,7 @@ void yaw_PID(void)
     yaw_Error_last = Error_current;
 
     Output[YAW] = KD + KP;
+
     SetYawMotor(KP + KD, configData[8]);
 }
 

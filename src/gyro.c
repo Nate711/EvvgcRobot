@@ -255,7 +255,7 @@ void MPU6050_Gyro_get(float *GyroData)
 void MPU6050_Gyro_calibration(void)
 {
     uint8_t i;
-    int loops = 150;
+    int loops = 10;
     float InitGyroData[3];
 
     for (i = 0; i < loops; i++)

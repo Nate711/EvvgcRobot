@@ -15,7 +15,7 @@
 #include "hw_config.h"
 #include "stm32f10x_tim.h"
 
-#define SETTLE_PAUSE 13
+#define SETTLE_PAUSE 1
 
 static volatile int WatchDogCounter;
 static volatile int gotIMU = 0;
